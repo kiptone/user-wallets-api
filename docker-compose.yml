@@ -1,0 +1,67 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: wallets_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: wallets_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist data across container restarts
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wallets_network
+
+  # FastAPI Application
+  app:
+    build: .
+    container_name: wallets_api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: wallets_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres123
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres123@db:5432/wallets_db
+      APP_ENV: production
+      DEBUG: "False"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # Mount source code for development (optional, remove for production)
+      - .:/app
+    networks:
+      - wallets_network
+    restart: unless-stopped
+
+  # Optional: Tests service
+  # Uncomment to run tests via docker-compose
+  # tests:
+  #   build: .
+  #   container_name: wallets_tests
+  #   environment:
+  #     DATABASE_URL: sqlite+aiosqlite:///:memory:
+  #     APP_ENV: testing
+  #   depends_on:
+  #     - db
+  #   command: pytest tests/ -v --tb=short
+  #   networks:
+  #     - wallets_network
+
+volumes:
+  postgres_data:
+
+networks:
+  wallets_network:
+    driver: bridge
