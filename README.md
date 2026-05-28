@@ -30,7 +30,7 @@ REST API для управления кошельками пользовател
 
 ```bash
 # Клонировать репозиторий
-git clone <repo-url>
+git clone https://github.com/kiptone/user-wallets-api.git
 cd user_wallets
 
 # Запустить приложение и БД
@@ -370,12 +370,11 @@ A: Установите PostgreSQL, создайте БД, запустите м
 
 ## 📄 Лицензия
 
-MIT
+MIT (Возможно, но это не точно)
 
 ## 🤝 Contributing
 
 Contributions приветствуются! Просто откройте Pull Request.
 
 ---
-
-**Сделано с ❤️ для управления кошельками пользователей**
+  
